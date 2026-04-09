@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Laporan Teknisi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+        .input-focus:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+        .btn-gradient {
+            background: linear-gradient(to right, #2563eb, #1d4ed8);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+        }
+        pre::-webkit-scrollbar {
+            width: 6px;
+        }
+        pre::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        /* Remove number arrows */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-6 px-4">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <header class="mb-10 text-center">
+            <div class="inline-block p-3 bg-blue-600 rounded-2xl mb-4 shadow-lg shadow-blue-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+            </div>
+            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Report Generator</h1>
+            <p class="text-slate-600 mt-2 font-medium italic">"Satu kali input, dua format laporan instan."</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <!-- SISI KIRI: INPUT DATA -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="glass-card rounded-3xl p-8 shadow-2xl shadow-slate-200/50">
+                    <div class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                        <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                        <h2 class="text-xl font-bold text-slate-800">Detail Pekerjaan</h2>
+                    </div>
+
+                    <div class="space-y-5">
+                        <!-- Selector Utama Jenis Pekerjaan -->
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 mb-1 block ml-1 uppercase">Pilih Jenis Pekerjaan</label>
+                            <select id="jenisPekerjaan" onchange="toggleFormMode()" class="w-full p-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none text-sm font-bold text-blue-600 shadow-sm">
+                                <option value="REGULER">REGULER</option>
+                                <option value="SQM">SQM</option>
+                                <option value="UNSPECT">UNSPECT</option>
+                                <option value="BOT">BOT</option>
+                                <option value="LAPSUNG">LAPSUNG</option>
+                                <option value="LABELING TIANG">LABELING TIANG</option>
+                                <option value="TANGIBLE ODP">TANGIBLE ODP</option>
+                                <option value="TANGIBLE ODC">TANGIBLE ODC</option>
+                            </select>
+                        </div>
+
+                        <!-- MODUL A: PASTE ORDER HD (Reguler Mode) -->
+                        <div id="modeReguler" class="space-y-5">
+                            <div>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+                                        <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" />
+                                    </svg>
+                                    PASTE ORDER HD
+                                </label>
+                                <textarea id="rawInput" rows="3" 
+                                    class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none input-focus transition-all text-sm placeholder:text-slate-400"
+                                    placeholder="Tempel order HD di sini..."></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 mb-1 block ml-1 uppercase">Segmen Gangguan</label>
+                                    <select id="segmenGangguan" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-100 outline-none text-sm font-semibold text-slate-700">
+                                        <option value="DROPCORE">DROPCORE</option>
+                                        <option value="IKR">IKR</option>
+                                        <option value="ONT" selected>ONT</option>
+                                        <option value="STB">STB</option>
+                                        <option value="ODP">ODP</option>
+                                        <option value="ODC">ODC</option>
+                                        <option value="DISTRIBUSI">DISTRIBUSI</option>
+                                        <option value="FEEDER">FEEDER</option>
+                                        <option value="LOGIC">LOGIC</option>
+                                        <option value="LAINNYA">LAINNYA</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 mb-1 block ml-1 uppercase">Alamat / Lokasi</label>
+                                    <input type="text" id="alamat" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-100 outline-none text-sm input-focus" placeholder="JL. CIJAWURA HILIR NO 137...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MODUL B: MANUAL/ODP MODE -->
+                        <div id="modeManual" class="hidden space-y-5 bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                            <div>
+                                <label id="labelManualDatek" class="text-xs font-bold text-blue-600 mb-1 block ml-1 uppercase">NAMA ODP</label>
+                                <textarea id="manualOdpInput" rows="2" 
+                                    class="w-full p-4 bg-white border border-blue-200 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none text-sm font-mono uppercase"
+                                    placeholder="Contoh: ODP-CJA-FCK/001"></textarea>
+                            </div>
+                            <div id="valinsContainer">
+                                <label class="text-xs font-bold text-blue-600 mb-1 block ml-1 uppercase">Valins ID (Hanya Angka)</label>
+                                <input type="text" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="valinsId" class="w-full p-3 bg-white border border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-100 outline-none text-sm" placeholder="Contoh: 12345678">
+                            </div>
+                            <div id="alamatManualContainer">
+                                <label class="text-xs font-bold text-blue-600 mb-1 block ml-1 uppercase">Alamat / Lokasi</label>
+                                <input type="text" id="alamatManual" class="w-full p-3 bg-white border border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-100 outline-none text-sm input-focus" placeholder="JL. CIJAWURA HILIR NO 137...">
+                            </div>
+                        </div>
+
+                        <!-- COMMON FIELDS -->
+                        <div id="commonFieldsRow1" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 mb-1 block ml-1 uppercase">Penyebab</label>
+                                <input type="text" id="penyebab" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-100 outline-none text-sm input-focus" placeholder="Penyebab Gangguan">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 mb-1 block ml-1 uppercase">Perbaikan</label>
+                                <input type="text" id="perbaikan" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-100 outline-none text-sm input-focus" placeholder="Perbaikan Yang Dilakukan">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 mb-1 block ml-1 uppercase">Teknisi 1</label>
+                                <input type="text" id="teknisi1" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-100 outline-none text-sm input-focus font-medium" placeholder="Nama Teknisi 1">
+                            </div>
+                            <div id="teknisi2Container">
+                                <label class="text-xs font-bold text-slate-500 mb-1 block ml-1 uppercase">Teknisi 2</label>
+                                <input type="text" id="teknisi2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-100 outline-none text-sm input-focus font-medium" placeholder="Nama Teknisi 2">
+                            </div>
+                        </div>
+                    
+                        <button onclick="generateReports()" class="btn-gradient w-full text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 group">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            GENERATE SEKARANG
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SISI KANAN: OUTPUT -->
+            <div class="lg:col-span-5 space-y-6">
+                <!-- FORMAT 1 -->
+                <div class="glass-card rounded-3xl p-6 shadow-xl shadow-blue-900/5 relative overflow-hidden border-l-4 border-l-blue-600">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-800 text-sm tracking-wide">FORMAT /CLOSE</h3>
+                        <button onclick="copyText('outClose', event)" class="text-[10px] font-bold bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors shadow-lg">SALIN</button>
+                    </div>
+                    <pre id="outClose" class="text-[10px] md:text-xs leading-relaxed whitespace-pre-wrap font-mono text-slate-600 h-64 overflow-y-auto bg-slate-50 p-4 border border-slate-100 rounded-2xl"></pre>
+                </div>
+
+                <!-- FORMAT 2 -->
+                <div class="glass-card rounded-3xl p-6 shadow-xl shadow-green-900/5 relative overflow-hidden border-l-4 border-l-green-600">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-800 text-sm tracking-wide">FORMAT /REKAP</h3>
+                        <button onclick="copyText('outRekap', event)" class="text-[10px] font-bold bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition-colors shadow-lg">SALIN</button>
+                    </div>
+                    <pre id="outRekap" class="text-[10px] md:text-xs leading-relaxed whitespace-pre-wrap font-mono text-slate-600 h-64 overflow-y-auto bg-slate-50 p-4 border border-slate-100 rounded-2xl"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden RegEx Storage -->
+    <input type="hidden" id="h_noTiket">
+    <input type="hidden" id="h_noInet">
+    <input type="hidden" id="h_noTel">
+    <input type="hidden" id="h_odp">
+
+    <script>
+        const jobMapping = {
+            "REGULER": { f1: "REGULER", f2: "REGULER HVC" },
+            "SQM": { f1: "SQM", f2: "SQM REGULER" },
+            "UNSPECT": { f1: "UNSPECT", f2: "UNSPEC REGULER" },
+            "BOT": { f1: "BOT", f2: "BOT" },
+            "LAPSUNG": { f1: "LAPSUNG", f2: "LAPSUNG" },
+            "LABELING TIANG": { f1: "LABELING TIANG", f2: "VALIDASI TIHANG" },
+            "TANGIBLE ODP": { f1: "TANGIBLE ODP", f2: "TANGIBLE ODP" },
+            "TANGIBLE ODC": { f1: "TANGIBLE ODC", f2: "TANGIBLE ODC" }
+        };
+
+        function toggleFormMode() {
+            const job = document.getElementById('jenisPekerjaan').value;
+            const manualList = ['TANGIBLE ODP', 'TANGIBLE ODC', 'LABELING TIANG'];
+            
+            const isManual = manualList.includes(job);
+            document.getElementById('modeManual').classList.toggle('hidden', !isManual);
+            document.getElementById('modeReguler').classList.toggle('hidden', isManual);
+
+            const isLabeling = job === 'LABELING TIANG';
+            const isTangibleOdp = job === 'TANGIBLE ODP';
+            const isTangibleOdc = job === 'TANGIBLE ODC';
+            
+            // Atur Placeholder dan Label Manual Datek
+            const inputDatek = document.getElementById('manualOdpInput');
+            const labelDatek = document.getElementById('labelManualDatek');
+            
+            if (isLabeling) {
+                labelDatek.textContent = "Label Tiang";
+                inputDatek.placeholder = "Contoh: CJA-FCK-001-TLKM";
+            } else if (isTangibleOdp) {
+                labelDatek.textContent = "NAMA ODP";
+                inputDatek.placeholder = "Contoh: ODP-CJA-FCK/001";
+            } else if (isTangibleOdc) {
+                labelDatek.textContent = "NAMA ODC";
+                inputDatek.placeholder = "CONTOH : ODC-CJA-FCK";
+            } else {
+                labelDatek.textContent = "Nama ODP / ODC";
+                inputDatek.placeholder = "Contoh: ODP-CJA-FCK/001";
+            }
+
+            // Sembunyikan Valins ID jika Labeling Tiang atau Tangible ODC
+            document.getElementById('valinsContainer').classList.toggle('hidden', isLabeling || isTangibleOdc);
+            
+            // Sembunyikan Alamat Manual jika Labeling Tiang, tampilkan jika manual lainnya
+            document.getElementById('alamatManualContainer').classList.toggle('hidden', !isManual || isLabeling);
+            
+            // Sembunyikan Penyebab, Perbaikan, dan Teknisi 2 jika Labeling Tiang, Tangible ODP, atau Tangible ODC
+            const shouldHideCommon = isLabeling || isTangibleOdp || isTangibleOdc;
+            document.getElementById('commonFieldsRow1').classList.toggle('hidden', shouldHideCommon);
+            document.getElementById('teknisi2Container').classList.toggle('hidden', shouldHideCommon);
+        }
+
+        document.getElementById('rawInput').addEventListener('input', function(e) {
+            const val = e.target.value;
+            const tiketMatch = val.match(/(INC\d{7,10})|(INX\d{9,13})|(INX-\d{9,13})/i);
+            document.getElementById('h_noTiket').value = tiketMatch ? tiketMatch[0] : "";
+            const inetMatch = val.match(/(1311\d{8,12}|022\d{3,8})/);
+            document.getElementById('h_noInet').value = inetMatch ? inetMatch[0] : "";
+            const noTelMatch = val.match(/((?<=\()[^)]+(?=\))|(\+62|62)?[\s-]?0?8[1-9]{1}\d{1}[\s-]?\d{4}[\s-]?\d{3,5})/);
+            document.getElementById('h_noTel').value = noTelMatch ? noTelMatch[0] : "";
+            const odpMatch = val.match(/ODP-CJA-\w{3,5}\/\d{2,3}/i);
+            document.getElementById('h_odp').value = odpMatch ? odpMatch[0] : "";
+        });
+
+        function generateReports() {
+            const jobKey = document.getElementById('jenisPekerjaan').value;
+            const manualList = ['TANGIBLE ODP', 'TANGIBLE ODC', 'LABELING TIANG'];
+            const isManualMode = manualList.includes(jobKey);
+            
+            const mapData = jobMapping[jobKey] || { f1: jobKey, f2: jobKey };
+            const teknisi1 = document.getElementById('teknisi1').value || "-";
+            const teknisi2 = document.getElementById('teknisi2').value || "-";
+            const penyebab = document.getElementById('penyebab').value || "-";
+            const perbaikan = document.getElementById('perbaikan').value || "-";
+            
+            const now = new Date();
+            const waktuSimple = now.toLocaleDateString("id-ID", { day: '2-digit', month: '2-digit', year: 'numeric' }) + " " + now.toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' }).replace(/\./g, ':');
+            const waktuPanjang = now.toLocaleDateString("id-ID", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+
+            let out1 = "", out2 = "";
+
+            if (jobKey === 'LABELING TIANG') {
+                const labelTiang = document.getElementById('manualOdpInput').value.trim().toUpperCase() || "-";
+                
+                out1 = `/CLOSE
+STO: CJA
+NO TIKET: INC
+NO INET/TLP/ALPRO: nama label tiang (${labelTiang})
+JENIS TIKET: LABELING TIANG
+MATERIAL: -
+SN LAMA: -
+SN BARU: -
+SEGMEN GANGGUAN: LAINNYA
+PENYEBAB GANGGUAN: VALIDASI TIANG
+PERBAIKAN: VALIDASI TIANG
+CP AKTIF: -
+KET LAIN: -`;
+
+                out2 = `/rekap
+Jenis Peerjaan: VALIDASI TIHANG
+Segment: B2C
+No Order/IN: -
+No Inet/Voice: nama label tiang (${labelTiang})
+Datek: -
+Teknisi 1: ${teknisi1.toUpperCase()}
+Teknisi 2: -
+Perbaikan: LABELING TIANG
+Keterangan: ${waktuSimple}
+TIKOR: -`;
+
+            } else if (jobKey === 'TANGIBLE ODP') {
+                const rawDatek = document.getElementById('manualOdpInput').value.trim().toUpperCase() || "-";
+                const valinsId = document.getElementById('valinsId').value || "-";
+                const alamatManual = document.getElementById('alamatManual').value.trim() || "-";
+                
+                out1 = `/CLOSE
+STO: CJA
+NO TIKET: INC / VALINS ID : ${valinsId}
+NO INET/TLP/ALPRO: ${rawDatek}
+JENIS TIKET: TANGIBLE ODP
+MATERIAL: -
+SN LAMA: -
+SN BARU: -
+SEGMEN GANGGUAN: ODP
+PENYEBAB GANGGUAN: PERAPIHAN ODP
+PERBAIKAN: PERAPIHAN ODP
+CP AKTIF: -
+KET LAIN: ${alamatManual}`;
+
+                out2 = `/rekap
+Jenis Peerjaan: TANGIBLE ODP
+Segment: B2C
+No Order/IN: ${rawDatek}
+No Inet/Voice: -
+Datek: ${rawDatek}
+Teknisi 1: ${teknisi1.toUpperCase()}
+Teknisi 2: -
+Perbaikan: TANGIBLE ODP
+Keterangan: ${alamatManual} // ${waktuSimple}
+TIKOR: -`;
+
+            } else if (jobKey === 'TANGIBLE ODC') {
+                const rawDatek = document.getElementById('manualOdpInput').value.trim().toUpperCase() || "-";
+                const alamatManual = document.getElementById('alamatManual').value.trim() || "-";
+                
+                out1 = `/CLOSE
+STO: CJA
+NO TIKET: INC
+NO INET/TLP/ALPRO: ${rawDatek}
+JENIS TIKET: TANGIBLE ODC
+MATERIAL: -
+SN LAMA: -
+SN BARU: -
+SEGMEN GANGGUAN: ODC
+PENYEBAB GANGGUAN: TANGIBLE ODC
+PERBAIKAN: TANGIBLE ODC
+CP AKTIF: -
+KET LAIN: ${alamatManual}`;
+
+                out2 = `/rekap
+Jenis Pekerjaan: TANGIBLE ODC
+Segment: B2C
+No Order/IN: ${rawDatek}
+No Inet/Voice: -
+Datek: ${rawDatek}
+Teknisi 1: ${teknisi1.toUpperCase()}
+Teknisi 2: -
+Perbaikan : TANGIBLE ODC
+Keterangan: ${alamatManual} // ${waktuPanjang}
+TIKOR: -`;
+
+            } else {
+                const noTiket = document.getElementById('h_noTiket').value || "-";
+                const noInet = document.getElementById('h_noInet').value || "-";
+                const noTel = document.getElementById('h_noTel').value || "-";
+                const odp = document.getElementById('h_odp').value || "-";
+                const segmenGangguan = document.getElementById('segmenGangguan').value;
+                const alamatInput = document.getElementById('alamat').value.trim();
+                const ketRekap = alamatInput ? `${alamatInput} // ${waktuPanjang}` : waktuPanjang;
+
+                out1 = `/CLOSE
+STO: CJA
+NO TIKET: ${noTiket}
+NO INET/TLP/ALPRO: ${noInet}
+JENIS TIKET: ${mapData.f1}
+MATERIAL: -
+SN LAMA: -
+SN BARU: -
+SEGMEN GANGGUAN: ${segmenGangguan}
+PENYEBAB GANGGUAN: ${penyebab}
+PERBAIKAN: ${perbaikan}
+CP AKTIF: ${noTel}
+KET LAIN: ${alamatInput || "-"}`;
+
+                out2 = `/rekap
+Jenis Pekerjaan: ${mapData.f2}
+Segment: B2C
+No Order/IN: ${noTiket}
+No Inet/Voice: ${noInet}
+Datek: ${odp}
+Teknisi 1: ${teknisi1.toUpperCase()}
+Teknisi 2: ${teknisi2.toUpperCase()}
+Perbaikan: ${perbaikan.toUpperCase()}
+Keterangan: ${ketRekap}
+TIKOR: -`;
+            }
+
+            document.getElementById('outClose').textContent = out1;
+            document.getElementById('outRekap').textContent = out2;
+        }
+
+        function copyText(elementId, event) {
+            const text = document.getElementById(elementId).textContent;
+            if (!text) return;
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            const btn = event.currentTarget;
+            const originalText = btn.textContent;
+            btn.textContent = "COPIED!";
+            btn.classList.add('opacity-70');
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('opacity-70');
+            }, 1000);
+        }
+
+        toggleFormMode();
+    </script>
+</body>
+</html>
